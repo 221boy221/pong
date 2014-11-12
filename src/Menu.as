@@ -10,7 +10,7 @@ package
 	 */
 	public class Menu extends Sprite 
 	{
-		
+				
 		public function Menu() 
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -27,7 +27,7 @@ package
 		private function start(e:MouseEvent):void 
 		{
 			trace("Clicked to start ze game");
-			dispatchEvent(new Event("startGame", false));
+			dispatchEvent(new Event(Main.STARTGAME, false));
 			
 		}
 		
