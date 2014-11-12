@@ -16,11 +16,11 @@ package
 	{
 		
 		protected var _paddleArt : PaddleArt01;
-		protected var _rotation :	Number = 0;
+		protected var _rotation : Number = 0;
 		protected var outOfBounds : Boolean = false;
 		protected var _rotationSpeed : Number = 0;
-		protected var _maxspeed : Number = 2;
-		protected var _acceleration : Number = .1;
+		protected var _maxspeed : Number = 3;
+		protected var _acceleration : Number = 0.2;
 		private var _offSet	: Point =  new Point();
 		
 		public function Player() 
@@ -66,18 +66,13 @@ package
 		// override it
 		protected function keyPressed(e:KeyboardEvent):void 
 		{
-			_offSet = Calculate.calculateOffset(rotation);
+			
 		}
 		
 		// override it
 		protected function keyReleased(e:KeyboardEvent):void 
 		{
-			/*
-			if (e.keyCode == Keyboard.W || e.keyCode == Keyboard.S || e.keyCode == Keyboard.DOWN || e.keyCode == Keyboard.UP) 
-			{
-				_rotation = 0;
-			}
-			*/
+			
 		}
 		
 		public function destroy():void 

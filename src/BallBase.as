@@ -12,6 +12,7 @@ package
 		
 		public var _ballArt : BallArt;
 		private var _velocity : Vector2D = new Vector2D( -5, -5);
+		private var _location : Vector2D = new Vector2D(0, 0);
 		
 		public function BallBase() 
 		{
@@ -54,6 +55,7 @@ package
 				_velocity.y *= -1;
 			}
 			
+			_location = new Vector2D(stage.stageWidth / 2 - x, stage.stageHeight / 2 - y);
 		}
 		
 		public function get velocity():Vector2D 
@@ -64,6 +66,16 @@ package
 		public function set velocity(value:Vector2D):void 
 		{
 			_velocity = value;
+		}
+		
+		public function get location():Vector2D 
+		{
+			return _location;
+		}
+		
+		public function set location(value:Vector2D):void 
+		{
+			_location = value;
 		}
 		
 	}

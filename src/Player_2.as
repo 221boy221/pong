@@ -31,19 +31,40 @@ package
 			trace("p2: " + _rotation);
 		}
 		
+		override protected function keyReleased(e:KeyboardEvent):void 
+		{
+			if (e.keyCode == Keyboard.W || e.keyCode == Keyboard.S)
+			{
+				_rotation = 0;
+			}
+		}
+		
 		override protected function checkBounds():void 
 		{
 			if (x <= stage.stageWidth / 2)
 			{
-				// UP
+				// MOVEMENT //
 				if (_rotation == 1 && _rotationSpeed < _maxspeed)
 				{
 					_rotationSpeed += 1;
 				}
-				// DOWN
-				if (_rotation == -1 && _rotationSpeed > -_maxspeed)
+				else if (_rotation == -1 && _rotationSpeed > -_maxspeed)
 				{
 					_rotationSpeed -= 1;
+				}
+				
+				// ACCELERATION
+				if (_rotationSpeed > (0 + _acceleration))
+				{
+					_rotationSpeed -= _acceleration;
+				}
+				else if (_rotationSpeed < (0 - _acceleration))
+				{
+					_rotationSpeed += _acceleration;
+				}
+				else
+				{
+					_rotationSpeed = 0;
 				}
 			} 
 			else

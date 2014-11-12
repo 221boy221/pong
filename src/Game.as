@@ -26,25 +26,29 @@ package
 			// entry point
 			trace("game loaded");
 			
-			addChild(_player01);
 			_player01.x = stage.stageWidth / 2;
 			_player01.y = stage.stageHeight / 2;
+			addChild(_player01);
 			trace("player 1 added");
 			
-			addChild(_player02);
 			_player02.rotation = 180;
+			addChild(_player02);
 			trace("player 2 added");
 			
 			_players.push(_player01);
 			_players.push(_player02);
 			
+			_ball.x = stage.stageWidth / 2;
+			_ball.y = stage.stageHeight / 2;
 			addChild(_ball);
 			trace("ball added");
 		}
 
 		private function update(e:Event):void 
 		{
-			for (var i :uint = 0; i < _players.length; i++) 
+			var _playersLength : uint = _players.length;
+			
+			for (var i :uint = 0; i < _playersLength; i++) 
 			{
 				if (_players[i].hitTestObject(_ball)) 
 				{
@@ -61,9 +65,30 @@ package
 					
 				}
 			}
+			
+			checkBall();
 		}
 		
-		
+		private function checkBall():void 
+		{
+			// If the ball goes out of the circle
+			if (_ball.location.length >= 300) 
+			{
+				// If the ball hits the RIGHT side of the circle
+				if (_ball.x > stage.stageWidth / 2)
+				{
+					trace("Right side");
+					// TODO: Give point to player 2
+				} 
+				else 
+				{
+					trace("Left side");
+					// TODO: Give point to player 1
+				}
+				
+				// TODO: Remove ball
+			}
+		}
 		
 	}
 

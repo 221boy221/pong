@@ -6,7 +6,7 @@ package calculation {
 	 */
 	public class Calculate {
 		
-		static private var radiusCircle:Number = 200;
+		static private var radiusCircle:Number = 250;
 		
 		public static function calculateOffset(angle:Number):Point {
 			var offSet:Point = new Point();
