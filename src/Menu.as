@@ -10,10 +10,14 @@ package
 	 */
 	public class Menu extends Sprite 
 	{
+<<<<<<< HEAD
 		
 		private var startMenu : StartMenu;
 		private var startButton : StartButton;
 		
+=======
+				
+>>>>>>> b5a3d17ea77d24765b25f997b9db0fdfe2955ecd
 		public function Menu() 
 		{
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -42,10 +46,15 @@ package
 			if (e.target==startButton)
 			{
 			trace("Clicked to start ze game");
+<<<<<<< HEAD
 			removeChild(startMenu)
 			removeChild(startButton)
 			dispatchEvent(new Event("startGame", false));
 			}
+=======
+			dispatchEvent(new Event(Main.STARTGAME, false));
+			
+>>>>>>> b5a3d17ea77d24765b25f997b9db0fdfe2955ecd
 		}
 		
 	}

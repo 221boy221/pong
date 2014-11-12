@@ -10,6 +10,8 @@ package
 	public class Main extends Sprite 
 	{
 		
+		public static const STARTGAME : String = "startGame";
+		public static const OPENMENU : String = "openMenu";
 		private var _menu : Menu;
 		private var _game : Game;
 		
@@ -24,7 +26,7 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 			
-			// Start with ze menu
+			// Start with menu
 			OpenMenu(e = null);
 		}
 		
@@ -32,32 +34,32 @@ package
 		{
 			if (_game)
 			{
-				// REMOVE ZE GAME
-				_game.removeEventListener("openMenu", OpenMenu);
+				// REMOVE - GAME
+				_game.removeEventListener(OPENMENU, OpenMenu);
 				removeChild(_game);
 				_game = null;
 			}
 			
-			// ADD ZE MENU
+			// ADD - MENU
 			_menu = new Menu();
 			addChild(_menu);
-			_menu.addEventListener("startGame", StartGame);
+			_menu.addEventListener(STARTGAME, StartGame);
 		}
 		
 		private function StartGame(e:Event):void 
 		{
 			if (_menu)
 			{
-				// REMOVE ZE MENU
-				_menu.removeEventListener("startGame", StartGame);
+				// REMOVE - MENU
+				_menu.removeEventListener(STARTGAME, StartGame);
 				removeChild(_menu);
 				_menu = null;
 			}
 			
-			// ADD ZE GAME
+			// ADD - GAME
 			_game = new Game();
 			addChild(_game);
-			_game.addEventListener("openMenu", OpenMenu);
+			_game.addEventListener(OPENMENU, OpenMenu);
 		}
 		
 	}
