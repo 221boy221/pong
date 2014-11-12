@@ -10,6 +10,7 @@ package
 		public function NormalBall() 
 		{
 			super();
+			
 			_ballArt = new BallArt;
 		}
 		

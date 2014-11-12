@@ -56,6 +56,16 @@ package
 			
 		}
 		
+		public function get velocity():Vector2D 
+		{
+			return _velocity;
+		}
+		
+		public function set velocity(value:Vector2D):void 
+		{
+			_velocity = value;
+		}
+		
 	}
 
 }

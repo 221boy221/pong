@@ -18,11 +18,10 @@ package
 		protected var _paddleArt : PaddleArt01;
 		protected var _rotation :	Number = 0;
 		protected var outOfBounds : Boolean = false;
+		protected var _rotationSpeed : Number = 0;
+		protected var _maxspeed : Number = 2;
+		protected var _acceleration : Number = .1;
 		private var _offSet	: Point =  new Point();
-		private var _rotationSpeed : Number = 0;
-		private var _maxspeed : Number = 6;
-		private var _acceleration : Number = .1;
-		
 		
 		public function Player() 
 		{
@@ -48,44 +47,14 @@ package
 			movement();
 		}
 		
-		
-
-		private function movement():void 
+		protected function movement():void 
 		{
 			// CIRCLE OF MOVEMENT
-			_offSet = Calculate.calculateOffset(this.rotation);
-			this.x = _offSet.x + stage.stageWidth / 2;
-			this.y = _offSet.y + stage.stageHeight / 2;
+			_offSet = Calculate.calculateOffset(rotation);
+			x = _offSet.x + stage.stageWidth / 2;
+			y = _offSet.y + stage.stageHeight / 2;
 			
 			rotation -= _rotationSpeed;
-			
-			if (outOfBounds)
-			{
-				_rotationSpeed = Math.abs(_rotationSpeed) / _rotationSpeed;
-				_rotationSpeed = _rotationSpeed - _rotationSpeed * 2;
-				
-				// check if it's above or below the origin
-				if (y >= stage.stageHeight / 2) 
-				{
-					_rotationSpeed *= _rotationSpeed;
-				} else
-				{
-					_rotationSpeed *= -_rotationSpeed;
-				}
-			}
-			else
-			{
-				// right
-				if (_rotation == 1 && _rotationSpeed < _maxspeed) 
-				{
-					_rotationSpeed += 1;			// if right is pressed and speed didn't hit the limit, increase speed.
-				}
-				// left
-				if (_rotation == -1 && _rotationSpeed > -_maxspeed) 
-				{
-					_rotationSpeed -= 1;			// if left is pressed and speed didn't hit the limit, increase speed (the other way).
-				}
-			}
 		}
 		
 		// override it
@@ -103,7 +72,12 @@ package
 		// override it
 		protected function keyReleased(e:KeyboardEvent):void 
 		{
-			
+			/*
+			if (e.keyCode == Keyboard.W || e.keyCode == Keyboard.S || e.keyCode == Keyboard.DOWN || e.keyCode == Keyboard.UP) 
+			{
+				_rotation = 0;
+			}
+			*/
 		}
 		
 		public function destroy():void 

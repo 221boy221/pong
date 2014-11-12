@@ -9,7 +9,7 @@ package
 	 */
 	public class Game extends Sprite 
 	{
-		
+		private var _players : Array = [];
 		private var _player01 : Player_1 = new Player_1();
 		private var _player02 : Player_2 = new Player_2();
 		private var _ball : NormalBall = new NormalBall();
@@ -32,19 +32,34 @@ package
 			trace("player 1 added");
 			
 			addChild(_player02);
-			_player02.x = stage.stageWidth / 2;
-			_player02.y = stage.stageHeight / 2;
+			_player02.rotation = 180;
 			trace("player 2 added");
+			
+			_players.push(_player01);
+			_players.push(_player02);
 			
 			addChild(_ball);
 			trace("ball added");
 		}
-		
+
 		private function update(e:Event):void 
 		{
-			if (_player01.hitTestObject(_ball)) {
-				trace("HIT");
-				
+			for (var i :uint = 0; i < _players.length; i++) 
+			{
+				if (_players[i].hitTestObject(_ball)) 
+				{
+					var tempX : Number;
+					var tempY : Number;
+					tempX = _ball.velocity.x;
+					tempY = _ball.velocity.y;
+					
+					_ball.velocity.x = tempY * -1;
+					_ball.velocity.y = tempX * -1;
+					_ball.x += _ball.velocity.x;
+					_ball.y += _ball.velocity.y;
+					break;
+					
+				}
 			}
 		}
 		
