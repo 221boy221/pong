@@ -15,11 +15,11 @@ package
 	public class Player extends Sprite
 	{
 		
-		protected var _paddleArt : PaddleArt01;
+		protected var _paddleArt : Sprite;
 		protected var _rotation : Number = 0;
 		protected var outOfBounds : Boolean = false;
 		protected var _rotationSpeed : Number = 0;
-		protected var _maxspeed : Number = 3;
+		protected var _maxspeed : Number = 1.5;
 		protected var _acceleration : Number = 0.2;
 		private var _offSet	: Point =  new Point();
 		

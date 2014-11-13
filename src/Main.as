@@ -34,10 +34,13 @@ package
 		{
 			if (_game)
 			{
-				// REMOVE - GAME
-				_game.removeEventListener(OPENMENU, OpenMenu);
-				removeChild(_game);
-				_game = null;
+				if (contains(_game))
+				{
+					// REMOVE - GAME
+					_game.removeEventListener(OPENMENU, OpenMenu);
+					removeChild(_game);
+					_game = null;
+				}
 			}
 			
 			// ADD - MENU
@@ -48,12 +51,15 @@ package
 		
 		private function StartGame(e:Event):void 
 		{
-			if (_menu)
+			if (_menu) 
 			{
-				// REMOVE - MENU
-				_menu.removeEventListener(STARTGAME, StartGame);
-				removeChild(_menu);
-				_menu = null;
+				if (contains(_menu))
+				{
+					// REMOVE - MENU
+					_menu.removeEventListener(STARTGAME, StartGame);
+					removeChild(_menu);
+					_menu = null;
+				}
 			}
 			
 			// ADD - GAME

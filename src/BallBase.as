@@ -11,8 +11,11 @@ package
 	{
 		
 		public var _ballArt : BallArt;
-		private var _velocity : Vector2D = new Vector2D( -5, -5);
-		private var _location : Vector2D = new Vector2D(0, 0);
+		private var _velocity : Vector2D;
+		private var _newVelocity : Vector2D;
+		private var _location : Vector2D;
+		private var _newRot : int;
+		private var _rotation : int;
 		
 		public function BallBase() 
 		{
@@ -21,61 +24,34 @@ package
 		 
 		private function init(e:Event):void
 		{
-			addEventListener(Event.ENTER_FRAME, update);
-			
 			addChild(_ballArt);
 		}
 		 
-		private function update(e:Event):void
+		public function update():void
 		{
+			rotation = _rotation;
+			
+			_velocity = new Vector2D(-3, -3);
+			_newVelocity = new Vector2D(_velocity.x, _velocity.y);
+		   
+			_velocity.angle = (rotation) * Math.PI / 180;
+			_newVelocity.angle = Math.atan2(_velocity.y, _velocity.x) - Math.atan2(_newVelocity.y, _newVelocity.x);
+			
 			x += _velocity.x;
 			y += _velocity.y;
-		 		 
-			// Switch it's X
-			if (x <= _ballArt.width / 2)
-			{
-				x = _ballArt.width / 2;
-				_velocity.x *= -1;
-			} 
-			else if (x >= stage.stageWidth - _ballArt.width / 2)
-			{
-				x = stage.stageWidth - _ballArt.width/2;
-				_velocity.x *= -1;
-			}
-		 
-			// Switch it's Y
-			if (y <= _ballArt.height / 2)
-			{
-				y = _ballArt.height / 2;
-				_velocity.y *= -1;
-			} 
-			else if (y >= stage.stageHeight - _ballArt.height / 2)
-			{
-				y = stage.stageHeight - _ballArt.height / 2;
-				_velocity.y *= -1;
-			}
 			
+			_newRot = (_newVelocity.angle / Math.PI) * 180 + 180;
 			_location = new Vector2D(stage.stageWidth / 2 - x, stage.stageHeight / 2 - y);
 		}
 		
-		public function get velocity():Vector2D 
+		public function hitPlatform():void 
 		{
-			return _velocity;
-		}
-		
-		public function set velocity(value:Vector2D):void 
-		{
-			_velocity = value;
+			_rotation = _newRot;
 		}
 		
 		public function get location():Vector2D 
 		{
 			return _location;
-		}
-		
-		public function set location(value:Vector2D):void 
-		{
-			_location = value;
 		}
 		
 	}

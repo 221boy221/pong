@@ -13,7 +13,7 @@ package
 		{
 			super();
 			
-			_paddleArt = new PaddleArt01();
+			_paddleArt = new PaddleArt02();
 		}
 		
 		override protected function keyPressed(e:KeyboardEvent):void 
