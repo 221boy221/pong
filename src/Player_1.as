@@ -28,7 +28,6 @@ package
 			{
 				_rotation = 1;
 			}
-			trace("p1: " + _rotation);
 		}
 		
 		override protected function keyReleased(e:KeyboardEvent):void 

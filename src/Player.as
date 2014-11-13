@@ -80,6 +80,7 @@ package
 			removeEventListener(Event.ENTER_FRAME, update);
 			removeEventListener(KeyboardEvent.KEY_DOWN, keyPressed);
 			removeEventListener(KeyboardEvent.KEY_UP, keyReleased);
+			removeChild(_paddleArt);
 		}
 		
 	}

@@ -25,6 +25,20 @@ package
 		private function init(e:Event):void
 		{
 			addChild(_ballArt);
+			switch (Math.floor(Math.random() * 2)) {
+				case 0:
+					rotation = 0;
+					_rotation = 0;
+					break;
+				case 1:
+					rotation = 180;
+					_rotation = 180;
+					break;
+				default:
+					rotation = 0;
+					_rotation = 0;
+					break;
+			}
 		}
 		 
 		public function update():void
