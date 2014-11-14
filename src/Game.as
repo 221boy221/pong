@@ -4,6 +4,8 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -15,17 +17,24 @@ package
 	 */
 	public class Game extends Sprite 
 	{
-		//BGs
+		// BGs
 		private var _bgArt01 : BgArt01 = new BgArt01();
 		private var _bgArt02 : BgArt02 = new BgArt02();
 		private var _gameCurtain : GameCurtain = new GameCurtain();
-		private var _countdown1 : Countdown1 = new Countdown1();
-		private var _countdown2 : Countdown2 = new Countdown2();
-		private var _countdown3 : Countdown3 = new Countdown3();
+		// Countdown
+		private var _countdown01_Art : Countdown1 = new Countdown1();
+		private var _countdown02_Art : Countdown2 = new Countdown2();
+		private var _countdown03_Art : Countdown3 = new Countdown3();
+		private var _countdown01_SFX : Countdown01_SFX = new Countdown01_SFX();
+		private var _countdown02_SFX : Countdown02_SFX = new Countdown02_SFX();
+		private var _countdownTimer	 : Timer;
+		private var _move3	: Boolean = false;
+		private var _move2	: Boolean = false;
+		private var _move1	: Boolean = false;
 		private var _speed1 : int;
 		private var _speed2 : int;
 		private var _speed3 : int;
-		// Players and Balls
+		// Players, Balls, etc
 		private var _players	: Array = [];
 		private var _player01	: Player_1 = new Player_1();
 		private var _player02	: Player_2 = new Player_2();
@@ -33,13 +42,20 @@ package
 		private var _ball		: NormalBall = new NormalBall();
 		private var _counter 	: int = 0;
 		private var _respawnBallTimer : Timer = new Timer(500, 0);
+		private var _roses01		: RoseArt01 = new RoseArt01();
+		private var _roses02		: RoseArt02 = new RoseArt02();
+		private var _destroyGameTimer : Timer = new Timer(6000);
 		// UI
-		private var SCORE1 : int = 0;
-		private var SCORE2 : int = 0;
-		private var textFormat	 : TextFormat = new TextFormat;
-		private var playerScore1 : TextField = new TextField();
-		private var playerScore2 : TextField = new TextField();
-		
+		private var _score01 : int = 0;
+		private var _score02 : int = 0;
+		private var _textFormat	 : TextFormat = new TextFormat;
+		private var _playerScore1 : TextField = new TextField();
+		private var _playerScore2 : TextField = new TextField();
+		// SFX
+		private var _gameSC : SoundChannel;
+		private var _score01_SFX : Score01_SFX = new Score01_SFX();
+		private var _score02_SFX : Score02_SFX = new Score02_SFX();
+		private var _gameMusic : IngameBG_SFX = new IngameBG_SFX();
 		
 		public function Game() 
 		{
@@ -51,65 +67,114 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			
 			// Positioning
-			_countdown1.x = _countdown2.x = _countdown3.x = stage.stageWidth / 2;
-			_countdown1.y = _countdown2.y = _countdown3.y = stage.stageHeight / 2;
+			_countdown01_Art.x = _countdown02_Art.x = _countdown03_Art.x = stage.stageWidth / 2;
+			_countdown01_Art.y = _countdown02_Art.y = _countdown03_Art.y = stage.stageHeight / 2;
 			_player01.x = stage.stageWidth / 2;
 			_player01.y = stage.stageHeight / 2;	
 			_player02.rotation = 180;
-			playerScore1.x = stage.stageWidth / 2 + 105;
-			playerScore2.x = stage.stageWidth / 2 - 200;
-			playerScore1.y = playerScore2.y = 10;
-			textFormat.color = 0xffffff;
-			textFormat.size = 15;
-			playerScore1.defaultTextFormat = textFormat;
-			playerScore2.defaultTextFormat = textFormat;
-			playerScore1.autoSize = TextFieldAutoSize.CENTER;
-			playerScore2.autoSize = TextFieldAutoSize.CENTER;
+			_playerScore1.x = stage.stageWidth / 2 + 105;
+			_playerScore2.x = stage.stageWidth / 2 - 200;
+			_playerScore1.y = _playerScore2.y = 10;
+			_textFormat.color = 0xffffff;
+			_textFormat.size = 15;
+			_playerScore1.defaultTextFormat = _textFormat;
+			_playerScore2.defaultTextFormat = _textFormat;
+			_playerScore1.autoSize = TextFieldAutoSize.CENTER;
+			_playerScore2.autoSize = TextFieldAutoSize.CENTER;
 			updateTextFields();
 			
-			// Adding everything
+			// Adding
 			addChild(_bgArt01);
 			addChild(_player01);
 			addChild(_player02);
-			addChild(_countdown1);
-			addChild(_countdown2);
-			addChild(_countdown3);
+			addChild(_countdown01_Art);
+			addChild(_countdown02_Art);
+			addChild(_countdown03_Art);
 			addChild(_bgArt02);
-			addChild(playerScore1);
-			addChild(playerScore2);
+			addChild(_playerScore1);
+			addChild(_playerScore2);
 			addChild(_gameCurtain);
-			
 			
 			// Fill the array
 			_players.push(_player01);
 			_players.push(_player02);
 			
-			addEventListener(Event.ENTER_FRAME, tempLoop);
+			// Play and loop forever
+			_gameSC = _gameMusic.play(0, int.MAX_VALUE); 
+			_gameSC.addEventListener(Event.SOUND_COMPLETE, soundLoop);
+			
+			// CD
+			_countdownTimer = new Timer(1000, 4);
+			_countdownTimer.addEventListener(TimerEvent.TIMER, onCountDown);
+			_countdownTimer.start();
+			
+			addEventListener(Event.ENTER_FRAME, countdown);
 		}
 		
-		private function tempLoop(e:Event):void 
+		private function onCountDown(e:TimerEvent):void 
 		{
-			_speed3 += 1;
-			_countdown3.y += _speed3 / 8;
-			if (_countdown3.y > stage.stageHeight) 
+			var t:Timer = e.target as Timer;
+			switch(t.currentCount)
 			{
-				_speed2 += 1;
-				_countdown2.y += _speed2 / 7;
-				if (_countdown2.y > stage.stageHeight) 
-				{
-					_speed1 += 1;
-					_countdown1.y += _speed1 / 7;
-					if (_countdown1.y > stage.stageHeight) 
-					{
-						startGame();
-					}
-				}
+				case 1:
+					_move3 = true;
+					_move2 = false;
+					_move1 = false;
+					_countdown01_SFX.play();
+					break;
+				case 2:
+					_move3 = false;
+					_move2 = true;
+					_move1 = false;
+					_countdown01_SFX.play();
+					break;
+				case 3:
+					_move3 = false;
+					_move2 = false;
+					_move1 = true;
+					_countdown02_SFX.play();
+					break;			
+				case 4:
+					startGame();
+					break;
 			}
 		}
 		
+		// Countdown
+		private function countdown(e:Event):void 
+		{
+			// update the countdown art
+			if (_move3)
+			{
+				_speed3 += 1;
+				_countdown03_Art.y += _speed3 / 6;
+			}
+			else if (_move2)
+			{
+				_speed2 += 1;
+				_countdown02_Art.y += _speed2 / 6;
+			}
+			else if (_move1)
+			{
+				_speed1 += 1;
+				_countdown01_Art.y += _speed1 / 6;
+			}
+			
+			// update the roses
+			if (contains(_roses01))
+			{
+				_roses01.y += 5;
+			} 
+			else if (contains(_roses02))
+			{
+				_roses02.y += 5;
+			}
+		}
+		
+		
 		private function startGame():void 
 		{
-			removeEventListener(Event.ENTER_FRAME, tempLoop);
+			_countdownTimer.removeEventListener(TimerEvent.TIMER, onCountDown);
 			addEventListener(Event.ENTER_FRAME, update);
 			respawnBall(null);
 		}
@@ -118,7 +183,8 @@ package
 		{
 			var _playersLength	: uint = _players.length,
 				_ballsLength 	: uint = _balls.length;
-				
+			
+			// Loop through players
 			for (var i : int = _playersLength - 1; i >= 0; i--) 
 			{
 				if (_players[i].hitTestPoint(_ball.x,_ball.y,true)) 
@@ -134,7 +200,7 @@ package
 					}
 				}
 			}
-			
+			// Loop through balls
 			for (i = _ballsLength - 1; i >= 0; i--) 
 			{
 				_balls[i].update();
@@ -143,29 +209,7 @@ package
 			
 		}
 		
-		private function checkBall():void 
-		{
-			// If the ball goes out of the circle
-			if (_ball.location.length >= 300) 
-			{
-				// If the ball hits the RIGHT side of the circle
-				if (_ball.x > stage.stageWidth / 2)
-				{
-					SCORE2 += 1;
-					updateTextFields();
-				} 
-				else 
-				{
-					SCORE1 += 1;
-					updateTextFields();
-				}
-				
-				respawnBall(null);
-				_respawnBallTimer.start();
-				_respawnBallTimer.addEventListener(TimerEvent.TIMER, respawnBall);
-			}
-		}
-		
+		// Respawn the ball
 		private function respawnBall(e:TimerEvent):void 
 		{
 			_respawnBallTimer.reset();
@@ -184,24 +228,74 @@ package
 			}
 		}
 		
-		private function updateTextFields():void
+		// Ball Position & Score
+		private function checkBall():void 
 		{
-			playerScore2.text = "Score:  " + SCORE2.toString();
-			playerScore1.text = "Score:  " + SCORE1.toString();
-			
-			if (SCORE1 >= 10)
+			if (_ball.location.length >= 300) 
 			{
-				trace("Player 1 won");
-				destroy();
-			}
-			else if (SCORE2 >= 10)
-			{
-				trace("Player 2 won");
-				destroy();
+				if (_ball.x > stage.stageWidth / 2)
+				{
+					_score02 += 1;
+					_score02_SFX.play();
+					updateTextFields();
+				} 
+				else 
+				{
+					_score01 += 1;
+					_score01_SFX.play();
+					updateTextFields();
+				}
+				
+				respawnBall(null);
+				_respawnBallTimer.start();
+				_respawnBallTimer.addEventListener(TimerEvent.TIMER, respawnBall);
 			}
 		}
 		
-		private function destroy():void
+		// Text & Win
+		private function updateTextFields():void
+		{
+			_playerScore2.text = "Score:  " + _score02.toString();
+			_playerScore1.text = "Score:  " + _score01.toString();
+			
+			if (_score01 >= 10)
+			{
+				win(1);
+			}
+			else if (_score02 >= 10)
+			{
+				win(2);
+			}
+		}
+		
+		private function win(winner:int):void
+		{
+			removeEventListener(Event.ENTER_FRAME, update);
+			switch (winner) 
+			{
+				case 1:
+					addChild(_roses01);
+					_roses01.x = stage.stageWidth / 4 * 3;
+					_roses01.y = 0;
+					break;
+				case 2:
+					addChild(_roses02);
+					_roses02.x = stage.stageWidth / 4;
+					_roses02.y = 0;
+					break;
+			}
+			_destroyGameTimer.addEventListener(TimerEvent.TIMER, destroy);
+			_destroyGameTimer.start();
+		}
+		
+		// Loop the bg music
+		private function soundLoop(e:Event):void 
+		{ 
+			_gameSC = _gameMusic.play(0, int.MAX_VALUE); 
+		}
+		
+		// Clean up the mess
+		private function destroy(e:TimerEvent):void
 		{
 			var l : uint = numChildren,
 				current : DisplayObject;
@@ -209,12 +303,15 @@ package
 			// Manually removing
 			removeEventListener(Event.ENTER_FRAME, update);
 			_respawnBallTimer.removeEventListener(TimerEvent.TIMER, respawnBall);
+			_countdownTimer.removeEventListener(TimerEvent.TIMER, onCountDown);
+			_destroyGameTimer.removeEventListener(TimerEvent.TIMER, destroy);
 			_player01.destroy();
 			_player02.destroy();
 			_players = [];
 			_balls = [];
+			_gameSC.stop();
 			
-			// Automatic removing
+			// Automatically removing
 			for ( var i : int = l -1; i >= 0; i--) 
 			{
 				current = getChildAt(i);
@@ -226,7 +323,7 @@ package
 			current = null;
 			i = l = NaN;
 			
-			// Run menu
+			// Open Menu
 			dispatchEvent(new Event(Main.OPENMENU, false));
 		}
 		

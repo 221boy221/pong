@@ -17,7 +17,6 @@ package
 		
 		protected var _paddleArt : Sprite;
 		protected var _rotation : Number = 0;
-		protected var outOfBounds : Boolean = false;
 		protected var _rotationSpeed : Number = 0;
 		protected var _maxspeed : Number = 1.5;
 		protected var _acceleration : Number = 0.2;

@@ -24,7 +24,7 @@ package
 			{
 				_rotation = 1;
 			}
-			else if (e.keyCode == Keyboard.W) 
+			else if (e.keyCode == Keyboard.W)
 			{
 				_rotation = -1;
 			}

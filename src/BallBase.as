@@ -16,6 +16,7 @@ package
 		private var _location : Vector2D;
 		private var _newRot : int;
 		private var _rotation : int;
+		private var _speed : int = 4;
 		
 		public function BallBase() 
 		{
@@ -45,7 +46,7 @@ package
 		{
 			rotation = _rotation;
 			
-			_velocity = new Vector2D(-3, -3);
+			_velocity = new Vector2D(_speed, _speed);
 			_newVelocity = new Vector2D(_velocity.x, _velocity.y);
 		   
 			_velocity.angle = (rotation) * Math.PI / 180;

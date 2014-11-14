@@ -1,5 +1,6 @@
 package  
 {
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -12,21 +13,21 @@ package
 	 */
 	public class Menu extends Sprite 
 	{
-		/*
-		//SFX
-		private var _menuMusic : Sound = new StartMusic();
-		private var _menuSC : SoundChannel;
-		*/
-		
+		// ART
 		private var _menuCurtain : MenuCurtain;
 		private var _gameCurtain : GameCurtain;
 		private var _startButton : StartButton;
 		private var _menuBoard : MenuBoard;
 		private var _bgArt01 : BgArt01;
 		private var _bgArt02 : BgArt02;
+		// SFX
+		private var _menuSC : SoundChannel;
+		private var _menuMusic : MenuBG_SFX = new MenuBG_SFX();
+		private var _menuClick : MenuClick_SFX = new MenuClick_SFX();
+		// Etc
+		private var _speed : int;
+		private var _clickedStart : Boolean = false;
 		
-		private var speed : int;
-		private var clickedStart : Boolean = false;
 		
 		public function Menu() 
 		{
@@ -37,12 +38,11 @@ package
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			addEventListener(Event.ENTER_FRAME, update);
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			
-			/*
 			// Play and loop forever
 			_menuSC = _menuMusic.play(0, int.MAX_VALUE); 
-			_menuSC.addEventListener(Event.SOUND_COMPLETE, loop);
-			*/
+			_menuSC.addEventListener(Event.SOUND_COMPLETE, soundLoop);
 			
 			_menuCurtain = new MenuCurtain();
 			_gameCurtain = new GameCurtain();
@@ -51,32 +51,30 @@ package
 			_bgArt01 = new BgArt01();
 			_bgArt02 = new BgArt02();
 			
+			// Positioning
 			_menuBoard.x = 75;
 			_menuBoard.y = 395;
+			_startButton.x = _menuBoard.x + 190;
+			_startButton.y = _menuBoard.y + 150;
 			
-			_startButton.x = _menuBoard.x + 165;
-			_startButton.y = _menuBoard.y + 80;
-			
+			// Adding
 			addChild(_bgArt01);
 			addChild(_bgArt02);
 			addChild(_menuCurtain);
 			addChild(_gameCurtain);
 			addChild(_menuBoard);
 			addChild(_startButton);
-			
-			
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		}
 		
 		private function update(e:Event):void 
 		{
-			if (clickedStart)
+			if (_clickedStart)
 			{
-				speed += 1;
-				_menuBoard.y += speed / 10;
-				_startButton.y += speed / 10;
+				_speed += 1;
+				_menuBoard.y += _speed / 10;
+				_startButton.y += _speed / 10;
 				
-				_menuCurtain.y -= speed / 10;
+				_menuCurtain.y -= _speed / 10;
 				if (_menuCurtain.y < -stage.stageHeight) 
 				{
 					destroy();
@@ -88,26 +86,40 @@ package
 		{
 			if (e.target == _startButton)
 			{
-				clickedStart = true;
+				_menuClick.play(200);
+				_clickedStart = true;
 			}
-			
 		}
-		/*
-		private function loop(e:Event):void 
+		
+		private function soundLoop(e:Event):void 
 		{ 
 			_menuSC = _menuMusic.play(0, int.MAX_VALUE); 
 		}
-		*/
 		
 		private function destroy():void 
 		{
-			removeChild(_menuCurtain);
-			removeChild(_gameCurtain);
-			removeChild(_startButton);
-			removeChild(_menuBoard);
-			removeChild(_bgArt01);
-			removeChild(_bgArt02);
+			var l : uint = numChildren,
+				current : DisplayObject;
+			
+			// Manually removing
 			removeEventListener(Event.ENTER_FRAME, update);
+			stage.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			_menuSC.removeEventListener(Event.SOUND_COMPLETE, soundLoop);
+			_menuSC.stop();
+			
+			// Automatically removing
+			for ( var i : int = l -1; i >= 0; i--) 
+			{
+				current = getChildAt(i);
+				if (current is Sprite || current is DisplayObject)
+				{
+					removeChild(current);
+				}
+			}
+			current = null;
+			i = l = NaN;
+			
+			// Start Game
 			dispatchEvent(new Event(Main.STARTGAME, false));
 		}
 	}
