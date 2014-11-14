@@ -6,6 +6,7 @@ package
 	import flash.events.TimerEvent;
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
+	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -36,26 +37,31 @@ package
 		private var _speed3 : int;
 		// Players, Balls, etc
 		private var _players	: Array = [];
+		private var _balls		: Array = [];
 		private var _player01	: Player_1 = new Player_1();
 		private var _player02	: Player_2 = new Player_2();
-		private var _balls		: Array = [];
 		private var _ball		: NormalBall = new NormalBall();
 		private var _counter 	: int = 0;
 		private var _respawnBallTimer : Timer = new Timer(500, 0);
-		private var _roses01		: RoseArt01 = new RoseArt01();
-		private var _roses02		: RoseArt02 = new RoseArt02();
 		private var _destroyGameTimer : Timer = new Timer(6000);
+		private var _roses01	: RoseArt01	= new RoseArt01();
+		private var _roses02	: RoseArt02	= new RoseArt02();
 		// UI
 		private var _score01 : int = 0;
 		private var _score02 : int = 0;
-		private var _textFormat	 : TextFormat = new TextFormat;
-		private var _playerScore1 : TextField = new TextField();
-		private var _playerScore2 : TextField = new TextField();
+		private var _score01_SFX  : Score01_SFX = new Score01_SFX();
+		private var _score02_SFX  : Score02_SFX = new Score02_SFX();
+		private var _textFormat	  : TextFormat	= new TextFormat();
+		private var _playerScore1 : TextField	= new TextField();
+		private var _playerScore2 : TextField	= new TextField();
+		private var _scoreBoard01 : ScoreBoard	= new ScoreBoard();
+		private var _scoreBoard02 : ScoreBoard	= new ScoreBoard();
+		private var _myFont : PristinaFont = new PristinaFont();
 		// SFX
 		private var _gameSC : SoundChannel;
-		private var _score01_SFX : Score01_SFX = new Score01_SFX();
-		private var _score02_SFX : Score02_SFX = new Score02_SFX();
 		private var _gameMusic : IngameBG_SFX = new IngameBG_SFX();
+		private var _cheering_SFX : Cheering_SFX = new Cheering_SFX();
+		
 		
 		public function Game() 
 		{
@@ -70,17 +76,23 @@ package
 			_countdown01_Art.x = _countdown02_Art.x = _countdown03_Art.x = stage.stageWidth / 2;
 			_countdown01_Art.y = _countdown02_Art.y = _countdown03_Art.y = stage.stageHeight / 2;
 			_player01.x = stage.stageWidth / 2;
-			_player01.y = stage.stageHeight / 2;	
+			_player01.y = stage.stageHeight / 2
 			_player02.rotation = 180;
-			_playerScore1.x = stage.stageWidth / 2 + 105;
-			_playerScore2.x = stage.stageWidth / 2 - 200;
-			_playerScore1.y = _playerScore2.y = 10;
+			_scoreBoard01.x = stage.stageWidth / 8 * 7 -15;
+			_scoreBoard02.x = stage.stageWidth / 8 +15;
+			_scoreBoard01.y = _scoreBoard02.y = stage.stageHeight / 2 - 60;
 			_textFormat.color = 0xffffff;
-			_textFormat.size = 15;
+			_textFormat.size = 75;
+			_textFormat.font = _myFont.fontName;
 			_playerScore1.defaultTextFormat = _textFormat;
 			_playerScore2.defaultTextFormat = _textFormat;
 			_playerScore1.autoSize = TextFieldAutoSize.CENTER;
 			_playerScore2.autoSize = TextFieldAutoSize.CENTER;
+			_playerScore1.x = _scoreBoard01.x;
+			_playerScore2.x = _scoreBoard02.x;
+			_playerScore1.y = _playerScore2.y = _scoreBoard01.y + (_scoreBoard01.y / 2);
+			_playerScore1.embedFonts = _playerScore2.embedFonts = true;
+			_playerScore1.antiAliasType = _playerScore2.antiAliasType = AntiAliasType.ADVANCED;
 			updateTextFields();
 			
 			// Adding
@@ -91,6 +103,8 @@ package
 			addChild(_countdown02_Art);
 			addChild(_countdown03_Art);
 			addChild(_bgArt02);
+			addChild(_scoreBoard01);
+			addChild(_scoreBoard02);
 			addChild(_playerScore1);
 			addChild(_playerScore2);
 			addChild(_gameCurtain);
@@ -255,8 +269,8 @@ package
 		// Text & Win
 		private function updateTextFields():void
 		{
-			_playerScore2.text = "Score:  " + _score02.toString();
-			_playerScore1.text = "Score:  " + _score01.toString();
+			_playerScore2.text = _score02.toString();
+			_playerScore1.text = _score01.toString();
 			
 			if (_score01 >= 10)
 			{
@@ -270,6 +284,7 @@ package
 		
 		private function win(winner:int):void
 		{
+			_cheering_SFX.play();
 			removeEventListener(Event.ENTER_FRAME, update);
 			switch (winner) 
 			{
